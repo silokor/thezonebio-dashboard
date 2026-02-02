@@ -28,13 +28,6 @@
   ],
   "weekly_sales": [
     {
-      "date": "01/27",
-      "cafe24": 0,
-      "naver": 0,
-      "coupang": 0,
-      "total": 0
-    },
-    {
       "date": "01/28",
       "cafe24": 0,
       "naver": 0,
@@ -71,6 +64,13 @@
     },
     {
       "date": "02/02",
+      "cafe24": 0,
+      "naver": 0,
+      "coupang": 0,
+      "total": 0
+    },
+    {
+      "date": "02/03",
       "cafe24": 0,
       "naver": 0,
       "coupang": 0,
@@ -112,5 +112,5 @@
       "status": "out"
     }
   ],
-  "collected_at": "2026-02-02T13:42:14.603Z"
+  "collected_at": "2026-02-02T16:48:49.939Z"
 }

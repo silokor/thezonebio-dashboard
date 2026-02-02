@@ -439,6 +439,15 @@
       return '₩' + num.toLocaleString('ko-KR');
     }
 
+    function getOrderDetailUrl(channel, orderId) {
+      const urls = {
+        cafe24: `https://thezonebio.cafe24.com/admin/php/shop1/s_new/order_view.php?order_id=${orderId}`,
+        naver: `https://sell.smartstore.naver.com/o/v3/order-detail/${orderId}`,
+        coupang: `https://wing.coupang.com/vendor-inventory/order/management/delivery-detail?shipmentBoxId=${orderId}`
+      };
+      return urls[channel] || '#';
+    }
+
     function renderTable() {
       const start = (currentPage - 1) * pageSize;
       const end = start + pageSize;
@@ -448,7 +457,12 @@
       tbody.innerHTML = pageOrders.map(o => `
         <tr>
           <td><span class="channel-badge ${o.channel}">${o.channel.toUpperCase()}</span></td>
-          <td style="font-family:monospace;font-size:12px;">${o.orderId}</td>
+          <td style="font-family:monospace;font-size:12px;">
+            <a href="${getOrderDetailUrl(o.channel, o.orderId)}" target="_blank" 
+               style="color:#3b82f6;text-decoration:none;cursor:pointer;" 
+               onmouseover="this.style.textDecoration='underline'" 
+               onmouseout="this.style.textDecoration='none'">${o.orderId}</a>
+          </td>
           <td>${o.orderDate}</td>
           <td>${o.customerName}</td>
           <td class="product-name" title="${o.productName}">${o.productName}</td>

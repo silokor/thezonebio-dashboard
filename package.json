@@ -1,5 +1,25 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.93.3",
     "ws": "^8.19.0"
-  }
+  },
+  "name": "ecommerce-dashboard",
+  "version": "1.0.0",
+  "description": "통합 주문 관리 대시보드 - Cafe24, Naver SmartStore, Coupang",
+  "main": "supabase-config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/silokor/thezonebio-dashboard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/silokor/thezonebio-dashboard/issues"
+  },
+  "homepage": "https://github.com/silokor/thezonebio-dashboard#readme"
 }
