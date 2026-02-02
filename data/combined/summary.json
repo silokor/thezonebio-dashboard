@@ -1,116 +1,72 @@
 {
-  "generated_at": "2026-02-02T22:36:00.000Z",
-  "period": "2025-11-01 ~ 2026-02-02 (3개월)",
-  
+  "generated_at": "2026-02-02T23:30:00.000Z",
   "channels": {
     "cafe24": {
       "total_orders": 26,
       "cancelled_orders": 3,
       "valid_orders": 23,
-      "total_revenue": 1976700,
-      "status": {
-        "배송완료": 20,
-        "취소": 3,
-        "테스트": 1
-      },
-      "note": "테스트 주문 ₩3,000 포함"
+      "revenue": 2044200
     },
     "naver": {
-      "total_orders": 23,
+      "total_orders": 14,
       "cancelled_orders": 9,
       "valid_orders": 14,
-      "total_revenue": 826900,
-      "status": {
-        "구매확정": 13,
-        "결제완료": 1,
-        "취소완료": 9
-      }
+      "revenue": 836900,
+      "pending_shipments": 1
     },
     "coupang": {
-      "total_orders": 1,
-      "cancelled_orders": 0,
-      "valid_orders": 1,
-      "confirmed_revenue": 59000,
-      "dashboard_3month_revenue": 128000,
-      "status": {
-        "배송완료": 1
-      },
-      "note": "Wing 30일 검색 제한. 대시보드 3개월 누적 ₩128,000 (추가 주문 있을 수 있음)"
+      "confirmed_orders": 1,
+      "estimated_orders": 1,
+      "revenue": 59000,
+      "note": "Wing 30일 제한으로 과거 데이터 미확인"
     }
   },
-
-  "combined": {
-    "total_valid_orders": 38,
-    "total_revenue": 2931600,
-    "monthly": {
-      "2025-11": {
-        "orders": 9,
-        "revenue": 533200
-      },
-      "2025-12": {
-        "orders": 8,
-        "revenue": 859600
-      },
-      "2026-01": {
-        "orders": 21,
-        "revenue": 1538800
-      }
+  "totals": {
+    "orders": 39,
+    "revenue": 2940100,
+    "pending_shipments": 5
+  },
+  "monthly": {
+    "2025-11": {
+      "orders": 8,
+      "revenue": 533100
+    },
+    "2025-12": {
+      "orders": 9,
+      "revenue": 860200
+    },
+    "2026-01": {
+      "orders": 22,
+      "revenue": 1546800
     }
   },
-
-  "top_products": {
-    "1+1_EVENT": { "orders": 9, "revenue": 549600 },
-    "DECAF": { "orders": 15, "revenue": 848500 },
-    "VIBRANT": { "orders": 5, "revenue": 524800 },
-    "HOUSE": { "orders": 4, "revenue": 165200 }
-  },
-
-  "inventory": {
-    "HOUSE": 5,
-    "DECAF": 3,
-    "VIBRANT": 0,
-    "1+1_EVENT": 0,
-    "last_updated": "2026-02-02"
-  },
-
-  "pending_shipments": [
-    {
-      "channel": "naver",
-      "orderId": "2026013166098201",
-      "orderDate": "2026-01-31",
-      "customer": "백강후",
-      "product": "LOCK IN COFFEE::DECAF",
-      "amount": 59000,
-      "status": "결제완료 (미발송)"
-    }
-  ],
-
-  "recently_delivered": [
+  "pending_orders": [
     {
       "channel": "cafe24",
       "orderId": "20260123-0000048",
-      "customer": "Sam Kim",
-      "product": "VIBRANT 외 2건",
+      "customerName": "Sam Kim",
       "amount": 207000,
-      "trackingNumber": "409692304770",
-      "deliveredVia": "세븐일레븐편의점택배"
+      "status": "배송중"
     },
     {
       "channel": "cafe24",
       "orderId": "20260114-0000012",
-      "customer": "정소영",
-      "product": "1+1 EVENT",
+      "customerName": "정소영",
       "amount": 69900,
-      "trackingNumber": "409692067105",
-      "deliveredVia": "세븐일레븐편의점택배"
+      "status": "배송중"
+    },
+    {
+      "channel": "naver",
+      "orderId": "2026013166098201",
+      "customerName": "백강후",
+      "amount": 59000,
+      "status": "결제완료"
     }
   ],
-
-  "alerts": [
-    "🔴 백강후 주문 미발송 (1/31 주문, ₩59,000) - 로지아이 예약 필요",
-    "⚠️ VIBRANT 재고 0 - 품절",
-    "⚠️ 1+1 EVENT 재고 0 - 품절", 
-    "⚠️ DECAF 재고 3 - 부족 (백강후 주문 처리 시 2개 남음)",
-    "⚠️ HOUSE 재고 5 - 부족"
-  ]
+  "inventory": {
+    "HOUSE": 5,
+    "DECAF": 3,
+    "VIBRANT": 0,
+    "EVENT_1PLUS1": 0
+  }
 }
