@@ -1,0 +1,149 @@
+{
+  "channel": "naver",
+  "collected_at": "2026-02-02T21:20:00.000Z",
+  "orders": [
+    {
+      "orderId": "2026013166098201",
+      "orderDate": "2026-01-31",
+      "customerName": "백강후",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "결제완료"
+    },
+    {
+      "orderId": "2026012591077971",
+      "orderDate": "2026-01-25",
+      "customerName": "김영민",
+      "productName": "LOCK IN COFFEE::HOUSE",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026012078092501",
+      "orderDate": "2026-01-20",
+      "customerName": "김현자",
+      "productName": "[1+1 EVENT] LOCK IN COFFEE",
+      "quantity": 1,
+      "amount": 69900,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026011247040711",
+      "orderDate": "2026-01-12",
+      "customerName": "조솔미",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010916923511",
+      "orderDate": "2026-01-09",
+      "customerName": "최진주",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010758091501",
+      "orderDate": "2026-01-07",
+      "customerName": "김태은",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010750243121",
+      "orderDate": "2026-01-07",
+      "customerName": "김인혜",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010749608821",
+      "orderDate": "2026-01-07",
+      "customerName": "강선이",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010747570531",
+      "orderDate": "2026-01-07",
+      "customerName": "박은경",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010557183961",
+      "orderDate": "2026-01-05",
+      "customerName": "이현미",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2026010536002581",
+      "orderDate": "2026-01-05",
+      "customerName": "김영래",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2025120727213991",
+      "orderDate": "2025-12-07",
+      "customerName": "박준영",
+      "productName": "LOCK IN COFFEE::DECAF",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2025112788877491",
+      "orderDate": "2025-11-27",
+      "customerName": "권규리",
+      "productName": "LOCK IN COFFEE::HOUSE",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    },
+    {
+      "orderId": "2025110322202211",
+      "orderDate": "2025-11-03",
+      "customerName": "조*미",
+      "productName": "LOCK IN COFFEE::HOUSE",
+      "quantity": 1,
+      "amount": 59000,
+      "status": "구매확정"
+    }
+  ],
+  "cancelled": [
+    {"orderId": "2026010547914891", "orderDate": "2026-01-05", "customerName": "김미영"},
+    {"orderId": "2026010367467651", "orderDate": "2026-01-03", "customerName": "전아진"},
+    {"orderId": "2026010363291131", "orderDate": "2026-01-03", "customerName": "최윤정"},
+    {"orderId": "2026010294229541", "orderDate": "2026-01-02", "customerName": "최진주"},
+    {"orderId": "2026010154324191", "orderDate": "2026-01-01", "customerName": "김인혜"},
+    {"orderId": "2025123099293591", "orderDate": "2025-12-30", "customerName": "김태은"},
+    {"orderId": "2025123019935251", "orderDate": "2025-12-30", "customerName": "강선이"},
+    {"orderId": "2025123013824881", "orderDate": "2025-12-30", "customerName": "박은경"},
+    {"orderId": "2025122659760691", "orderDate": "2025-12-26", "customerName": "권수현"}
+  ],
+  "summary": {
+    "total_orders": 14,
+    "cancelled_orders": 9,
+    "pending_shipments": 1,
+    "total_revenue": 826900
+  }
+}

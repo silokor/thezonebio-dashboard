@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Dashboard | 통합 주문 관리</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="container">
+        
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">
+                    <span class="logo-icon">◈</span>
+                    통합 주문 대시보드
+                </h1>
+                <span class="subtitle">Cafe24 · Naver · Coupang</span>
+            </div>
+            <div class="header-right">
+                <button class="refresh-btn" id="refreshBtn" title="데이터 새로고침">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="refresh-icon">
+                        <path d="M23 4v6h-6"></path>
+                        <path d="M1 20v-6h6"></path>
+                        <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path>
+                    </svg>
+                    <span class="refresh-btn-text">새로고침</span>
+                </button>
+                <div class="refresh-indicator" id="refreshIndicator">
+                    <span class="pulse"></span>
+                    <span class="refresh-text">실시간</span>
+                </div>
+                <div class="last-update" id="lastUpdate">
+                    마지막 업데이트: --:--:--
+                </div>
+            </div>
+        </header>
+        
+        <!-- Summary Cards -->
+        <section class="summary-cards">
+            <div class="card summary-card">
+                <div class="card-icon orders-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-label">오늘 주문</span>
+                    <span class="card-value" id="todayOrders">--</span>
+                    <span class="card-unit">건</span>
+                </div>
+            </div>
+            
+            <div class="card summary-card">
+                <div class="card-icon pending-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="3" width="15" height="13"></rect>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-label">미출고</span>
+                    <span class="card-value warning" id="pendingShipments">--</span>
+                    <span class="card-unit">건</span>
+                </div>
+            </div>
+            
+            <div class="card summary-card">
+                <div class="card-icon revenue-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-label">오늘 매출</span>
+                    <span class="card-value" id="todayRevenue">--</span>
+                    <span class="card-unit">원</span>
+                </div>
+            </div>
+            
+            <div class="card summary-card">
+                <div class="card-icon alert-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="card-content">
+                    <span class="card-label">재고 부족</span>
+                    <span class="card-value danger" id="lowStockAlerts">--</span>
+                    <span class="card-unit">품목</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2>채널별 주문 비중</h2>
+                    <span class="card-badge">오늘</span>
+                </div>
+                <div class="chart-container pie-chart-container">
+                    <canvas id="channelChart"></canvas>
+                </div>
+                <div class="chart-legend" id="channelLegend"></div>
+            </div>
+            
+            <div class="card chart-card chart-card-wide">
+                <div class="card-header">
+                    <h2>주간 매출 추이</h2>
+                    <span class="card-badge">최근 7일</span>
+                </div>
+                <div class="chart-container line-chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Tables Section -->
+        <section class="tables-section">
+            
+            <!-- Pending Shipments Table -->
+            <div class="card table-card">
+                <div class="card-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="header-icon">
+                            <rect x="1" y="3" width="15" height="13"></rect>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                        </svg>
+                        미출고 주문
+                    </h2>
+                    <span class="card-badge" id="pendingCount">0건</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>채널</th>
+                                <th>주문번호</th>
+                                <th>상품명</th>
+                                <th>수량</th>
+                                <th>주문일시</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingShipmentsTable">
+                            <tr class="loading-row">
+                                <td colspan="5">데이터를 불러오는 중...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Inventory Table -->
+            <div class="card table-card">
+                <div class="card-header">
+                    <h2>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="header-icon">
+                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"></path>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                        재고 현황
+                    </h2>
+                    <div class="filter-toggle">
+                        <button class="filter-btn active" data-filter="all">전체</button>
+                        <button class="filter-btn" data-filter="low">부족</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>상품명</th>
+                                <th>현재재고</th>
+                                <th>예약</th>
+                                <th>가용</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable">
+                            <tr class="loading-row">
+                                <td colspan="5">데이터를 불러오는 중...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </section>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <span>© 2024 E-Commerce Dashboard</span>
+            <span class="footer-divider">|</span>
+            <span>자동 새로고침: 5분</span>
+        </footer>
+        
+    </div>
+    
+    <!-- Scripts -->
+    <script src="/static/js/charts.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

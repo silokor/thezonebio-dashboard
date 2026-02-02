@@ -1,0 +1,76 @@
+{
+  "platform": "coupang",
+  "sellerName": "더존바이오",
+  "collectedAt": "2026-02-02T08:30:00+09:00",
+  
+  "orderStatus": {
+    "period": "최근 14일",
+    "결제완료": 0,
+    "상품준비중": 0,
+    "배송지시": 0,
+    "당일출고필요": 0,
+    "출고지연": 0
+  },
+  
+  "claims": {
+    "period": "최근 30일",
+    "출고중지요청": 0,
+    "반품접수": 0,
+    "교환접수": 0
+  },
+  
+  "inquiries": {
+    "period": "최근 30일",
+    "고객센터문의": 0,
+    "고객문의": 0
+  },
+  
+  "priceManagement": {
+    "아이템위너아닌상품": 0,
+    "자동가격조정중상품": 0,
+    "최근7일추가매출": 0,
+    "최근7일추가판매수": 0
+  },
+  
+  "promotion": {
+    "period": "최근 90일",
+    "진행중": 0,
+    "심사중": 0,
+    "반려": 0
+  },
+  
+  "advertising": {
+    "period": "최근 7일",
+    "집행광고비": 2956,
+    "상품광고전환매출": 0,
+    "상품광고수익률": 0
+  },
+  
+  "settlement": {
+    "nextPaymentDate": "2026-03-03",
+    "expectedAmount": 18286
+  },
+  
+  "products": {
+    "판매중": 3,
+    "임시저장": 0,
+    "승인반려": 0,
+    "품절": 0
+  },
+  
+  "sellerGrade": {
+    "currentGrade": "일반판매자",
+    "threeMonthSales": 128000,
+    "threeMonthTarget": 200000000,
+    "itemWinnerRate": 100,
+    "itemWinnerTarget": 70,
+    "sellerScoreItems": 3
+  },
+  
+  "sellerScore": {
+    "주문이행": 100,
+    "정시배송완료": 100,
+    "정시출고완료": 100,
+    "24시간내답변": 100
+  }
+}

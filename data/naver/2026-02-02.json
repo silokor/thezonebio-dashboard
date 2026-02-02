@@ -1,0 +1,44 @@
+{
+  "date": "2026-02-02",
+  "lastSync": "2026-02-02T04:00:00+09:00",
+  "source": "naver",
+  "storeId": "ZONE",
+  "orderStatus": {
+    "paid": 1,
+    "shipped": 0,
+    "shipping": 0,
+    "delayed": 1
+  },
+  "settlement": {
+    "expected": 0,
+    "pending": 0
+  },
+  "cancellation": {
+    "cancelRequest": 0,
+    "cancelComplete": 0,
+    "returnRequest": 0,
+    "returnComplete": 0,
+    "exchange": 0
+  },
+  "products": {
+    "onSale": 4,
+    "needsApproval": 1
+  },
+  "sales": {
+    "today": {
+      "revenue": 50400,
+      "orders": 1,
+      "confirmRate": 6.7
+    },
+    "last90d": {
+      "revenue": 50400
+    }
+  },
+  "pendingOrders": [
+    {
+      "orderId": "naver-pending-1",
+      "status": "paid",
+      "note": "결제완료 대기중"
+    }
+  ]
+}

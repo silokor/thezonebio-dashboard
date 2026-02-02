@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>더존바이오 이커머스 대시보드</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #222;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #fff 0%, #888 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .last-updated { color: #666; font-size: 13px; }
+
+    /* Summary Cards */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: linear-gradient(145deg, #151515 0%, #0d0d0d 100%);
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card-label { font-size: 12px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-value { font-size: 28px; font-weight: 600; color: #fff; }
+    .card-sub { font-size: 12px; color: #4ade80; margin-top: 4px; }
+    .card-sub.negative { color: #f87171; }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-group { display: flex; align-items: center; gap: 8px; }
+    .filter-group label { font-size: 13px; color: #888; }
+    input[type="date"], select {
+      background: #151515;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 14px;
+    }
+    input[type="date"]:focus, select:focus { outline: none; border-color: #555; }
+    .btn {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 20px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #333; }
+    .btn.primary { background: #3b82f6; border-color: #3b82f6; }
+    .btn.primary:hover { background: #2563eb; }
+
+    /* Chart Section */
+    .chart-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .chart-card {
+      background: linear-gradient(145deg, #151515 0%, #0d0d0d 100%);
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .chart-title { font-size: 16px; font-weight: 500; margin-bottom: 20px; }
+    .chart-container { position: relative; height: 280px; }
+
+    /* Channel Pills */
+    .channel-pills { display: flex; gap: 8px; margin-bottom: 16px; }
+    .pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pill.cafe24 { background: #3b82f620; color: #3b82f6; border: 1px solid #3b82f640; }
+    .pill.cafe24.active { background: #3b82f6; color: #fff; }
+    .pill.naver { background: #22c55e20; color: #22c55e; border: 1px solid #22c55e40; }
+    .pill.naver.active { background: #22c55e; color: #fff; }
+    .pill.coupang { background: #f9731620; color: #f97316; border: 1px solid #f9731640; }
+    .pill.coupang.active { background: #f97316; color: #fff; }
+    .pill.all { background: #ffffff10; color: #fff; border: 1px solid #ffffff20; }
+    .pill.all.active { background: #fff; color: #000; }
+
+    /* Table */
+    .table-section {
+      background: linear-gradient(145deg, #151515 0%, #0d0d0d 100%);
+      border: 1px solid #222;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid #222;
+    }
+    .table-title { font-size: 16px; font-weight: 500; }
+    .order-count { color: #888; font-size: 14px; }
+    
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      padding: 14px 20px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #0d0d0d;
+      border-bottom: 1px solid #222;
+    }
+    td {
+      padding: 16px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    tr:hover td { background: #151515; }
+    
+    .channel-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .channel-badge.cafe24 { background: #3b82f620; color: #3b82f6; }
+    .channel-badge.naver { background: #22c55e20; color: #22c55e; }
+    .channel-badge.coupang { background: #f9731620; color: #f97316; }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .status-badge.completed { background: #22c55e20; color: #22c55e; }
+    .status-badge.shipping { background: #3b82f620; color: #3b82f6; }
+    .status-badge.pending { background: #eab30820; color: #eab308; }
+    .status-badge.cancelled { background: #ef444420; color: #ef4444; }
+
+    .amount { font-weight: 500; font-variant-numeric: tabular-nums; }
+    .product-name { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 20px;
+    }
+    .pagination button {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .pagination button:hover { background: #252525; }
+    .pagination button.active { background: #3b82f6; border-color: #3b82f6; }
+    .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Inventory Alert */
+    .inventory-section { margin-top: 32px; }
+    .inventory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .inventory-item {
+      background: linear-gradient(145deg, #151515 0%, #0d0d0d 100%);
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .inventory-item.critical { border-color: #ef4444; }
+    .inventory-item.warning { border-color: #eab308; }
+    .inv-name { font-size: 14px; color: #888; margin-bottom: 8px; }
+    .inv-count { font-size: 32px; font-weight: 600; }
+    .inv-count.critical { color: #ef4444; }
+    .inv-count.warning { color: #eab308; }
+    .inv-count.ok { color: #22c55e; }
+
+    @media (max-width: 1024px) {
+      .summary-cards { grid-template-columns: repeat(2, 1fr); }
+      .chart-section { grid-template-columns: 1fr; }
+      .inventory-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .summary-cards { grid-template-columns: 1fr; }
+      .inventory-grid { grid-template-columns: 1fr; }
+      th, td { padding: 12px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>더존바이오 이커머스 대시보드</h1>
+      <div class="last-updated">마지막 업데이트: <span id="lastUpdate">-</span></div>
+    </header>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card">
+        <div class="card-label">총 매출</div>
+        <div class="card-value" id="totalRevenue">-</div>
+        <div class="card-sub" id="revenueChange">-</div>
+      </div>
+      <div class="card">
+        <div class="card-label">총 주문</div>
+        <div class="card-value" id="totalOrders">-</div>
+        <div class="card-sub" id="orderChange">-</div>
+      </div>
+      <div class="card">
+        <div class="card-label">평균 객단가</div>
+        <div class="card-value" id="avgOrderValue">-</div>
+        <div class="card-sub">주문당 평균</div>
+      </div>
+      <div class="card">
+        <div class="card-label">미배송 주문</div>
+        <div class="card-value" id="pendingOrders">-</div>
+        <div class="card-sub" id="pendingAmount">-</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>기간</label>
+        <input type="date" id="startDate" value="2025-11-01">
+        <span style="color:#666">~</span>
+        <input type="date" id="endDate" value="2026-02-02">
+      </div>
+      <div class="filter-group">
+        <label>채널</label>
+        <select id="channelFilter">
+          <option value="all">전체</option>
+          <option value="cafe24">Cafe24</option>
+          <option value="naver">Naver</option>
+          <option value="coupang">Coupang</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>상태</label>
+        <select id="statusFilter">
+          <option value="all">전체</option>
+          <option value="completed">배송완료</option>
+          <option value="shipping">배송중</option>
+          <option value="pending">결제완료</option>
+          <option value="cancelled">취소</option>
+        </select>
+      </div>
+      <button class="btn primary" onclick="applyFilters()">적용</button>
+      <button class="btn" onclick="resetFilters()">초기화</button>
+    </div>
+
+    <!-- Charts -->
+    <div class="chart-section">
+      <div class="chart-card">
+        <div class="chart-title">일별 매출 추이</div>
+        <div class="chart-container">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">채널별 매출</div>
+        <div class="chart-container">
+          <canvas id="channelChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="table-section">
+      <div class="table-header">
+        <div class="table-title">주문 내역</div>
+        <div class="order-count"><span id="filteredCount">0</span>건</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>채널</th>
+            <th>주문번호</th>
+            <th>주문일시</th>
+            <th>고객명</th>
+            <th>상품</th>
+            <th>금액</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable">
+        </tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Inventory -->
+    <div class="inventory-section">
+      <h3 style="font-size:16px; margin-bottom:16px; font-weight:500;">재고 현황</h3>
+      <div class="inventory-grid" id="inventoryGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    // All orders data
+    let allOrders = [];
+    let filteredOrders = [];
+    let currentPage = 1;
+    const pageSize = 20;
+
+    // Load data
+    async function loadData() {
+      try {
+        const [cafe24Res, naverRes, coupangRes, summaryRes] = await Promise.all([
+          fetch('data/cafe24/orders.json').then(r => r.json()),
+          fetch('data/naver/orders.json').then(r => r.json()),
+          fetch('data/coupang/orders.json').then(r => r.json()),
+          fetch('data/combined/summary.json').then(r => r.json())
+        ]);
+
+        // Normalize Cafe24
+        const cafe24Orders = (cafe24Res.orders || cafe24Res).map(o => ({
+          channel: 'cafe24',
+          orderId: o.orderId,
+          orderDate: o.orderDate.split(' ')[0],
+          orderTime: o.orderDate,
+          customerName: o.customerName,
+          productName: o.productName,
+          amount: o.paymentAmount,
+          status: normalizeStatus(o.status)
+        }));
+
+        // Normalize Naver
+        const naverOrders = naverRes.orders.map(o => ({
+          channel: 'naver',
+          orderId: o.orderId,
+          orderDate: o.orderDate,
+          orderTime: o.orderDate,
+          customerName: o.customerName,
+          productName: o.productName,
+          amount: o.amount,
+          status: normalizeStatus(o.status)
+        }));
+
+        // Normalize Coupang
+        const coupangOrders = coupangRes.orders.map(o => ({
+          channel: 'coupang',
+          orderId: o.orderId,
+          orderDate: o.orderDate,
+          orderTime: o.orderDate,
+          customerName: o.customerName,
+          productName: o.productName,
+          amount: o.amount,
+          status: normalizeStatus(o.status)
+        }));
+
+        allOrders = [...cafe24Orders, ...naverOrders, ...coupangOrders]
+          .sort((a, b) => new Date(b.orderTime) - new Date(a.orderTime));
+
+        filteredOrders = [...allOrders];
+        
+        updateDashboard(summaryRes);
+        renderTable();
+        renderCharts();
+        renderInventory(summaryRes.inventory);
+        
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ko-KR');
+      } catch (err) {
+        console.error('Data load error:', err);
+      }
+    }
+
+    function normalizeStatus(status) {
+      if (!status) return 'pending';
+      const s = status.toLowerCase();
+      // 순서 중요: "결제완료"는 pending, "배송완료"/"구매확정"은 completed
+      if (s.includes('취소')) return 'cancelled';
+      if (s.includes('배송완료') || s.includes('구매확정')) return 'completed';
+      if (s.includes('배송중')) return 'shipping';
+      if (s.includes('결제완료')) return 'pending';
+      return 'pending';
+    }
+
+    function updateDashboard(summary) {
+      const validOrders = filteredOrders.filter(o => o.status !== 'cancelled' && o.amount > 0);
+      const totalRevenue = validOrders.reduce((sum, o) => sum + o.amount, 0);
+      const pendingOrders = filteredOrders.filter(o => o.status === 'shipping' || o.status === 'pending');
+      const pendingAmount = pendingOrders.reduce((sum, o) => sum + o.amount, 0);
+
+      document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
+      document.getElementById('totalOrders').textContent = validOrders.length + '건';
+      document.getElementById('avgOrderValue').textContent = validOrders.length > 0 
+        ? formatCurrency(Math.round(totalRevenue / validOrders.length)) 
+        : '₩0';
+      document.getElementById('pendingOrders').textContent = pendingOrders.length + '건';
+      document.getElementById('pendingAmount').textContent = formatCurrency(pendingAmount);
+      document.getElementById('filteredCount').textContent = filteredOrders.length;
+    }
+
+    function formatCurrency(num) {
+      return '₩' + num.toLocaleString('ko-KR');
+    }
+
+    function renderTable() {
+      const start = (currentPage - 1) * pageSize;
+      const end = start + pageSize;
+      const pageOrders = filteredOrders.slice(start, end);
+
+      const tbody = document.getElementById('ordersTable');
+      tbody.innerHTML = pageOrders.map(o => `
+        <tr>
+          <td><span class="channel-badge ${o.channel}">${o.channel.toUpperCase()}</span></td>
+          <td style="font-family:monospace;font-size:12px;">${o.orderId}</td>
+          <td>${o.orderDate}</td>
+          <td>${o.customerName}</td>
+          <td class="product-name" title="${o.productName}">${o.productName}</td>
+          <td class="amount">${formatCurrency(o.amount)}</td>
+          <td><span class="status-badge ${o.status}">${getStatusLabel(o.status)}</span></td>
+        </tr>
+      `).join('');
+
+      renderPagination();
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        completed: '배송완료',
+        shipping: '배송중',
+        pending: '결제완료',
+        cancelled: '취소'
+      };
+      return labels[status] || status;
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredOrders.length / pageSize);
+      const pagination = document.getElementById('pagination');
+      
+      let html = `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>이전</button>`;
+      
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+          html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        } else if (i === currentPage - 3 || i === currentPage + 3) {
+          html += `<span style="color:#666">...</span>`;
+        }
+      }
+      
+      html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>`;
+      pagination.innerHTML = html;
+    }
+
+    function goToPage(page) {
+      const totalPages = Math.ceil(filteredOrders.length / pageSize);
+      if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        renderTable();
+      }
+    }
+
+    function applyFilters() {
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const channel = document.getElementById('channelFilter').value;
+      const status = document.getElementById('statusFilter').value;
+
+      filteredOrders = allOrders.filter(o => {
+        const date = o.orderDate;
+        if (startDate && date < startDate) return false;
+        if (endDate && date > endDate) return false;
+        if (channel !== 'all' && o.channel !== channel) return false;
+        if (status !== 'all' && o.status !== status) return false;
+        return true;
+      });
+
+      currentPage = 1;
+      updateDashboard({});
+      renderTable();
+      renderCharts();
+    }
+
+    function resetFilters() {
+      document.getElementById('startDate').value = '2025-11-01';
+      document.getElementById('endDate').value = '2026-02-02';
+      document.getElementById('channelFilter').value = 'all';
+      document.getElementById('statusFilter').value = 'all';
+      filteredOrders = [...allOrders];
+      currentPage = 1;
+      updateDashboard({});
+      renderTable();
+      renderCharts();
+    }
+
+    let revenueChart, channelChart;
+
+    function renderCharts() {
+      // Daily revenue chart - fill missing dates with 0
+      const dailyData = {};
+      filteredOrders.filter(o => o.status !== 'cancelled').forEach(o => {
+        const date = o.orderDate;
+        if (!dailyData[date]) dailyData[date] = 0;
+        dailyData[date] += o.amount;
+      });
+
+      // Get date range and fill gaps
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const allDates = [];
+      const current = new Date(startDate);
+      const end = new Date(endDate);
+      while (current <= end) {
+        allDates.push(current.toISOString().split('T')[0]);
+        current.setDate(current.getDate() + 1);
+      }
+      
+      const sortedDates = allDates;
+      const revenueData = sortedDates.map(d => dailyData[d] || 0);
+
+      if (revenueChart) revenueChart.destroy();
+      revenueChart = new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+          labels: sortedDates.map(d => d.slice(5)),
+          datasets: [{
+            label: '매출',
+            data: revenueData,
+            borderColor: '#3b82f6',
+            backgroundColor: '#3b82f620',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: '#222' }, ticks: { color: '#666' } },
+            y: { grid: { color: '#222' }, ticks: { color: '#666', callback: v => '₩' + (v/1000) + 'k' } }
+          }
+        }
+      });
+
+      // Channel chart
+      const channelData = { cafe24: 0, naver: 0, coupang: 0 };
+      filteredOrders.filter(o => o.status !== 'cancelled').forEach(o => {
+        channelData[o.channel] += o.amount;
+      });
+
+      if (channelChart) channelChart.destroy();
+      channelChart = new Chart(document.getElementById('channelChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Cafe24', 'Naver', 'Coupang'],
+          datasets: [{
+            data: [channelData.cafe24, channelData.naver, channelData.coupang],
+            backgroundColor: ['#3b82f6', '#22c55e', '#f97316'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#888', padding: 20 } }
+          }
+        }
+      });
+    }
+
+    function renderInventory(inventory) {
+      const items = [
+        { name: 'HOUSE', count: inventory.HOUSE || 0 },
+        { name: 'DECAF', count: inventory.DECAF || 0 },
+        { name: 'VIBRANT', count: inventory.VIBRANT || 0 },
+        { name: '1+1 EVENT', count: inventory['1+1_EVENT'] || 0 }
+      ];
+
+      document.getElementById('inventoryGrid').innerHTML = items.map(item => {
+        const status = item.count === 0 ? 'critical' : item.count <= 5 ? 'warning' : 'ok';
+        return `
+          <div class="inventory-item ${status}">
+            <div class="inv-name">${item.name}</div>
+            <div class="inv-count ${status}">${item.count}개</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Init
+    loadData();
+  </script>
+</body>
+</html>

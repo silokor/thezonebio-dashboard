@@ -1,0 +1,23 @@
+# E-Commerce Dashboard Backend Requirements
+
+# Core Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# HTTP Client (for API integrations)
+httpx>=0.26.0
+
+# Development
+python-dotenv>=1.0.0
+
+# Optional: For async operations
+anyio>=4.2.0
+
+# Optional: For caching (Redis)
+# redis>=5.0.0
+
+# Optional: For database (if needed)
+# sqlalchemy>=2.0.0
+# asyncpg>=0.29.0

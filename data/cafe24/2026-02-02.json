@@ -1,0 +1,64 @@
+{
+  "collectedAt": "2026-02-02T14:51:00+09:00",
+  "source": "cafe24",
+  "shopId": "thezonebio",
+  "dataAsOf": "2026-02-02 14:00",
+  "todayTasks": {
+    "입금전": 0,
+    "배송준비중": 0,
+    "배송보류중": 0,
+    "배송대기": 0,
+    "배송중": 2,
+    "취소신청": 0,
+    "취소처리중": 0,
+    "교환신청": 0,
+    "교환처리중": 0,
+    "반품신청": 0,
+    "반품처리중": 0,
+    "환불전": 0,
+    "게시물관리": 0
+  },
+  "dailySales": {
+    "2026-01-31": {
+      "주문": { "amount": 0, "count": 0 },
+      "결제": { "amount": 0, "count": 0 },
+      "환불": { "amount": 0, "count": 0 }
+    },
+    "2026-02-01": {
+      "주문": { "amount": 0, "count": 0 },
+      "결제": { "amount": 0, "count": 0 },
+      "환불": { "amount": 0, "count": 0 }
+    },
+    "2026-02-02": {
+      "주문": { "amount": 0, "count": 0 },
+      "결제": { "amount": 0, "count": 0 },
+      "환불": { "amount": 0, "count": 0 }
+    }
+  },
+  "summary": {
+    "last7days": {
+      "average": {
+        "주문": { "amount": 0, "count": 0 },
+        "결제": { "amount": 0, "count": 0 },
+        "환불": { "amount": 0, "count": 0 }
+      },
+      "total": {
+        "주문": { "amount": 0, "count": 0 },
+        "결제": { "amount": 0, "count": 0 },
+        "환불": { "amount": 0, "count": 0 }
+      }
+    },
+    "last30days": {
+      "average": {
+        "주문": { "amount": 44120, "count": 0 },
+        "결제": { "amount": 26490, "count": 0 },
+        "환불": { "amount": 1740, "count": 0 }
+      },
+      "total": {
+        "주문": { "amount": 1323600, "count": 10 },
+        "결제": { "amount": 794700, "count": 10 },
+        "환불": { "amount": 52200, "count": 1 }
+      }
+    }
+  }
+}

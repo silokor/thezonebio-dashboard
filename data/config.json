@@ -1,0 +1,17 @@
+{
+  "cafe24": {
+    "mallId": "thezonebio",
+    "adminUrl": "https://thezonebio.cafe24.com/admin",
+    "dashboardUrl": "https://thezonebio.cafe24.com/admin/php/shop1/s_new/order_list.php"
+  },
+  "naver": {
+    "sellerId": "",
+    "adminUrl": "https://sell.smartstore.naver.com"
+  },
+  "coupang": {
+    "vendorId": "",
+    "adminUrl": "https://wing.coupang.com"
+  },
+  "syncInterval": "1h",
+  "dataPath": "/Users/sati/.openclaw/workspace/ecommerce-dashboard/data"
+}
