@@ -386,7 +386,7 @@
         <div class="card-sub">주문당 평균</div>
       </div>
       <div class="card">
-        <div class="card-label">미배송 주문</div>
+        <div class="card-label">미발송 주문</div>
         <div class="card-value" id="pendingOrders">-</div>
         <div class="card-sub" id="pendingAmount">-</div>
       </div>
@@ -700,7 +700,7 @@
     function updateDashboard(summary) {
       const validOrders = filteredOrders.filter(o => o.status !== 'cancelled' && o.amount > 0);
       const totalRevenue = validOrders.reduce((sum, o) => sum + o.amount, 0);
-      const pendingOrders = filteredOrders.filter(o => o.status === 'shipping' || o.status === 'pending');
+      const pendingOrders = filteredOrders.filter(o => o.status === 'pending');
       const pendingAmount = pendingOrders.reduce((sum, o) => sum + o.amount, 0);
 
       document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
