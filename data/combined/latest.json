@@ -2,8 +2,8 @@
   "summary": {
     "date": "2026-02-03",
     "total_orders": 26,
-    "total_revenue": 742500,
-    "pending_shipments": 0,
+    "total_revenue": 0,
+    "pending_shipments": 2,
     "low_stock_alerts": 4
   },
   "channel_breakdown": [
@@ -17,7 +17,7 @@
       "channel": "naver",
       "order_count": 14,
       "revenue": 826900,
-      "percentage": 111.4
+      "percentage": 0
     },
     {
       "channel": "coupang",
@@ -77,7 +77,24 @@
       "total": 0
     }
   ],
-  "pending_shipments": [],
+  "pending_shipments": [
+    {
+      "order_id": "20260123-0000048",
+      "channel": "cafe24",
+      "product_name": "LOCK IN COFFEE::VIBRANT 외 2건",
+      "quantity": 1,
+      "ordered_at": "2026-01-23T16:58:11",
+      "customer_name": "Sam Kim"
+    },
+    {
+      "order_id": "20260114-0000012",
+      "channel": "cafe24",
+      "product_name": "[1+1 EVENT] LOCK IN COFFEE",
+      "quantity": 1,
+      "ordered_at": "2026-01-14T21:22:33",
+      "customer_name": "정소영"
+    }
+  ],
   "inventory": [
     {
       "product_id": "P001",
@@ -112,5 +129,5 @@
       "status": "out"
     }
   ],
-  "collected_at": "2026-02-03T08:16:49.466Z"
+  "collected_at": "2026-02-03T10:20:13.599Z"
 }

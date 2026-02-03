@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>더존바이오 이커머스 대시보드</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -470,6 +471,13 @@
   </div>
 
   <script>
+    // Supabase Configuration
+    const SUPABASE_URL = 'https://cjttjcarpqwonxixtovk.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqdHRqY2FycHF3b254aXh0b3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMjQ3NDMsImV4cCI6MjA4NTYwMDc0M30.1Q0xTYEUUzRQj6oTPKVSK9_GKWVe0EbSdPtyEG_ErM4';
+    const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqdHRqY2FycHF3b254aXh0b3ZrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDAyNDc0MywiZXhwIjoyMDg1NjAwNzQzfQ.PrrUHqrlZMOy0-p1vWOOJFVmkF0SPF_mFflTTLtz5Yc';
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const dbAdmin = window.supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
     // Auth
     const ADMIN_ID = 'thezonebio';
     const ADMIN_PW_HASH = 'a3f5b2c1d4e6'; // Simple hash check
@@ -567,8 +575,48 @@
     let currentPage = 1;
     const pageSize = 20;
 
-    // Load data
+    // Load data from Supabase
     async function loadData() {
+      try {
+        // Fetch orders from Supabase
+        const { data: orders, error } = await db
+          .from('orders')
+          .select('*')
+          .order('order_date', { ascending: false });
+
+        if (error) throw error;
+
+        // Transform Supabase data to dashboard format
+        allOrders = orders.map(o => ({
+          channel: o.channel,
+          orderId: o.order_id,
+          orderDate: o.order_date ? o.order_date.split('T')[0].split(' ')[0] : '',
+          orderTime: o.order_date || '',
+          customerName: o.customer_name,
+          productName: o.product_name,
+          amount: o.amount || 0,
+          status: o.status
+        }));
+
+        filteredOrders = [...allOrders];
+        
+        updateDashboard({});
+        renderTable();
+        renderCharts();
+        loadInventory();
+        hideRestrictedBlocks();
+        
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ko-KR');
+        console.log(`Loaded ${orders.length} orders from Supabase`);
+      } catch (err) {
+        console.error('Supabase load error:', err);
+        // Fallback to local JSON files
+        await loadLocalData();
+      }
+    }
+
+    // Fallback: Load from local JSON
+    async function loadLocalData() {
       try {
         const [cafe24Res, naverRes, coupangRes, summaryRes] = await Promise.all([
           fetch('data/cafe24/orders.json').then(r => r.json()),
@@ -577,7 +625,6 @@
           fetch('data/combined/summary.json').then(r => r.json())
         ]);
 
-        // Normalize Cafe24
         const cafe24Orders = (cafe24Res.orders || cafe24Res).map(o => ({
           channel: 'cafe24',
           orderId: o.orderId,
@@ -589,7 +636,6 @@
           status: normalizeStatus(o.status)
         }));
 
-        // Normalize Naver
         const naverOrders = naverRes.orders.map(o => ({
           channel: 'naver',
           orderId: o.orderId,
@@ -601,7 +647,6 @@
           status: normalizeStatus(o.status)
         }));
 
-        // Normalize Coupang
         const coupangOrders = coupangRes.orders.map(o => ({
           channel: 'coupang',
           orderId: o.orderId,
@@ -624,9 +669,20 @@
         renderInventory(summaryRes.inventory);
         hideRestrictedBlocks();
         
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ko-KR');
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ko-KR') + ' (로컬)';
       } catch (err) {
-        console.error('Data load error:', err);
+        console.error('Local data load error:', err);
+      }
+    }
+
+    // Load inventory from Supabase
+    async function loadInventory() {
+      try {
+        const { data, error } = await db.from('inventory').select('*').order('id');
+        if (error) throw error;
+        renderInventoryFromDB(data);
+      } catch (err) {
+        console.error('Inventory load error:', err);
       }
     }
 
@@ -870,6 +926,27 @@
           <div class="inventory-item ${status}">
             <div class="inv-name">${item.name}</div>
             <div class="inv-count ${status}">${item.count}개</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render inventory from Supabase data
+    function renderInventoryFromDB(items) {
+      const displayOrder = ['HOUSE', 'DECAF', 'VIBRANT', 'MUSHROOM_CUP'];
+      const displayNames = { HOUSE: 'HOUSE', DECAF: 'DECAF', VIBRANT: 'VIBRANT', MUSHROOM_CUP: '버섯 컵' };
+      
+      const sortedItems = displayOrder.map(code => 
+        items.find(i => i.product_code === code) || { product_code: code, quantity: 0 }
+      );
+
+      document.getElementById('inventoryGrid').innerHTML = sortedItems.map(item => {
+        const status = item.quantity === 0 ? 'critical' : item.quantity <= 5 ? 'warning' : 'ok';
+        const name = displayNames[item.product_code] || item.product_code;
+        return `
+          <div class="inventory-item ${status}">
+            <div class="inv-name">${name}</div>
+            <div class="inv-count ${status}">${item.quantity}개</div>
           </div>
         `;
       }).join('');
