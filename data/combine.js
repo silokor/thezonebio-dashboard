@@ -18,16 +18,32 @@ function loadJson(file) {
 
 // Normalize cafe24 order fields
 function normalizeCafe24(order) {
-  const statusMap = { '배송중': 'shipping', '배송완료': 'delivered', '취소': 'cancelled' };
+  // Determine status from shipping/delivered/canceled counts OR shippingStatus string
+  let status = 'unknown';
+  if (order.shippingStatus) {
+    // New format: shippingStatus is a string like "배송중", "배송완료", "취소"
+    const ss = order.shippingStatus;
+    if (ss.includes('취소')) status = 'cancelled';
+    else if (ss.includes('완료') || ss.includes('delivered')) status = 'delivered';
+    else if (ss.includes('배송중') || ss.includes('shipping')) status = 'shipping';
+    else if (ss.includes('준비') || ss.includes('pending')) status = 'pending';
+  } else {
+    // Legacy format: numeric counts
+    if (order.canceled > 0) status = 'cancelled';
+    else if (order.delivered > 0) status = 'delivered';
+    else if (order.shipping > 0) status = 'shipping';
+    else if (order.unshipped > 0) status = 'pending';
+  }
+  
   return {
     order_id: order.orderId || order.order_id,
     ordered_at: order.orderDate || order.ordered_at,
     customer_name: order.customerName || order.customer_name,
     product_name: order.productName || order.product_name,
-    total_amount: order.paymentAmount || order.total_amount || 0,
-    status: statusMap[order.deliveryStatus] || order.status || 'unknown',
-    shipping: order.deliveryStatus === '배송중' ? 1 : 0,
-    pending: 0
+    total_amount: order.paidAmount || order.actualPayment || order.paymentAmount || order.total_amount || 0,
+    status: status,
+    shipping: status === 'shipping' ? 1 : (order.shipping || 0),
+    pending: status === 'pending' ? 1 : (order.unshipped || 0)
   };
 }
 

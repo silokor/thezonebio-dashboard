@@ -228,13 +228,131 @@
       .inventory-grid { grid-template-columns: 1fr; }
       th, td { padding: 12px; font-size: 12px; }
     }
+
+    /* Login Modal */
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .login-overlay.hidden { display: none; }
+    .login-box {
+      background: #151515;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .login-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .login-subtitle {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .login-input {
+      width: 100%;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .login-input:focus { outline: none; border-color: #3b82f6; }
+    .login-btn {
+      width: 100%;
+      background: #3b82f6;
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .login-btn:hover { background: #2563eb; }
+    .login-error {
+      color: #ef4444;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+    }
+    .login-error.show { display: block; }
+    .guest-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .guest-link:hover { color: #888; }
+
+    /* Auth header */
+    .auth-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .user-badge {
+      font-size: 13px;
+      color: #4ade80;
+      background: #4ade8020;
+      padding: 6px 12px;
+      border-radius: 6px;
+    }
+    .logout-btn {
+      font-size: 13px;
+      color: #888;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .logout-btn:hover { color: #fff; }
+
+    /* Hidden data */
+    .hidden-data {
+      color: #444 !important;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
+  <!-- Login Modal -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <div class="login-title">로그인</div>
+      <div class="login-subtitle">더존바이오 이커머스 대시보드</div>
+      <input type="text" class="login-input" id="loginId" placeholder="아이디">
+      <input type="password" class="login-input" id="loginPw" placeholder="비밀번호">
+      <button class="login-btn" onclick="doLogin()">로그인</button>
+      <div class="login-error" id="loginError">아이디 또는 비밀번호가 일치하지 않습니다</div>
+      <div class="guest-link" onclick="guestAccess()">게스트로 보기 (제한된 정보)</div>
+    </div>
+  </div>
+
   <div class="container">
     <header>
       <h1>더존바이오 이커머스 대시보드</h1>
-      <div class="last-updated">마지막 업데이트: <span id="lastUpdate">-</span></div>
+      <div class="auth-area">
+        <div class="last-updated">마지막 업데이트: <span id="lastUpdate">-</span></div>
+        <span class="user-badge" id="userBadge" style="display:none;">관리자</span>
+        <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="doLogout()">로그아웃</button>
+      </div>
     </header>
 
     <!-- Summary Cards -->
@@ -300,10 +418,13 @@
           <canvas id="revenueChart"></canvas>
         </div>
       </div>
-      <div class="chart-card">
+      <div class="chart-card" id="channelChartCard">
         <div class="chart-title">채널별 매출</div>
-        <div class="chart-container">
+        <div class="chart-container" id="channelChartContainer">
           <canvas id="channelChart"></canvas>
+        </div>
+        <div id="channelChartRestricted" style="display:none;height:280px;align-items:center;justify-content:center;color:#444;font-style:italic;">
+          로그인 필요
         </div>
       </div>
     </div>
@@ -340,6 +461,85 @@
   </div>
 
   <script>
+    // Auth
+    const ADMIN_ID = 'thezonebio';
+    const ADMIN_PW_HASH = 'a3f5b2c1d4e6'; // Simple hash check
+    let isLoggedIn = false;
+
+    function simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(16).slice(0, 12);
+    }
+
+    function checkAuth() {
+      const session = localStorage.getItem('tzb_session');
+      if (session === 'admin') {
+        isLoggedIn = true;
+        showLoggedInUI();
+      } else {
+        isLoggedIn = false;
+        document.getElementById('loginOverlay').classList.remove('hidden');
+      }
+    }
+
+    function doLogin() {
+      const id = document.getElementById('loginId').value;
+      const pw = document.getElementById('loginPw').value;
+      
+      if (id === ADMIN_ID && pw === 'ejwhsqkdldh1!') {
+        localStorage.setItem('tzb_session', 'admin');
+        isLoggedIn = true;
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('loginError').classList.remove('show');
+        showLoggedInUI();
+        loadData();
+      } else {
+        document.getElementById('loginError').classList.add('show');
+      }
+    }
+
+    function guestAccess() {
+      localStorage.setItem('tzb_session', 'guest');
+      isLoggedIn = false;
+      document.getElementById('loginOverlay').classList.add('hidden');
+      applyGuestRestrictions();
+      loadData();
+    }
+
+    function doLogout() {
+      localStorage.removeItem('tzb_session');
+      location.reload();
+    }
+
+    function showLoggedInUI() {
+      document.getElementById('userBadge').style.display = 'inline-block';
+      document.getElementById('logoutBtn').style.display = 'inline-block';
+    }
+
+    function applyGuestRestrictions() {
+      // 기간 제한: 최근 2주만
+      const today = new Date();
+      const twoWeeksAgo = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+      document.getElementById('startDate').value = twoWeeksAgo.toISOString().split('T')[0];
+      document.getElementById('startDate').min = twoWeeksAgo.toISOString().split('T')[0];
+      document.getElementById('endDate').value = today.toISOString().split('T')[0];
+    }
+
+    function hideRestrictedData() {
+      if (!isLoggedIn) {
+        // 총 매출 숨김
+        document.getElementById('totalRevenue').innerHTML = '<span class="hidden-data">로그인 필요</span>';
+        document.getElementById('revenueChange').textContent = '';
+        // 평균 객단가 숨김
+        document.getElementById('avgOrderValue').innerHTML = '<span class="hidden-data">로그인 필요</span>';
+      }
+    }
+
     // All orders data
     let allOrders = [];
     let filteredOrders = [];
@@ -401,6 +601,7 @@
         renderTable();
         renderCharts();
         renderInventory(summaryRes.inventory);
+        hideRestrictedData();
         
         document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ko-KR');
       } catch (err) {
@@ -511,10 +712,21 @@
     }
 
     function applyFilters() {
-      const startDate = document.getElementById('startDate').value;
-      const endDate = document.getElementById('endDate').value;
+      let startDate = document.getElementById('startDate').value;
+      let endDate = document.getElementById('endDate').value;
       const channel = document.getElementById('channelFilter').value;
       const status = document.getElementById('statusFilter').value;
+
+      // 게스트는 최대 2주 제한
+      if (!isLoggedIn) {
+        const today = new Date();
+        const twoWeeksAgo = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000);
+        const minDate = twoWeeksAgo.toISOString().split('T')[0];
+        if (startDate < minDate) {
+          startDate = minDate;
+          document.getElementById('startDate').value = minDate;
+        }
+      }
 
       filteredOrders = allOrders.filter(o => {
         const date = o.orderDate;
@@ -529,6 +741,7 @@
       updateDashboard({});
       renderTable();
       renderCharts();
+      hideRestrictedData();
     }
 
     function resetFilters() {
@@ -594,31 +807,43 @@
         }
       });
 
-      // Channel chart
-      const channelData = { cafe24: 0, naver: 0, coupang: 0 };
-      filteredOrders.filter(o => o.status !== 'cancelled').forEach(o => {
-        channelData[o.channel] += o.amount;
-      });
-
+      // Channel chart (only for logged in users)
       if (channelChart) channelChart.destroy();
-      channelChart = new Chart(document.getElementById('channelChart'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Cafe24', 'Naver', 'Coupang'],
-          datasets: [{
-            data: [channelData.cafe24, channelData.naver, channelData.coupang],
-            backgroundColor: ['#3b82f6', '#22c55e', '#f97316'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#888', padding: 20 } }
+      
+      const channelContainer = document.getElementById('channelChartContainer');
+      const channelRestricted = document.getElementById('channelChartRestricted');
+      
+      if (!isLoggedIn) {
+        channelContainer.style.display = 'none';
+        channelRestricted.style.display = 'flex';
+      } else {
+        channelContainer.style.display = 'block';
+        channelRestricted.style.display = 'none';
+        
+        const channelData = { cafe24: 0, naver: 0, coupang: 0 };
+        filteredOrders.filter(o => o.status !== 'cancelled').forEach(o => {
+          channelData[o.channel] += o.amount;
+        });
+
+        channelChart = new Chart(document.getElementById('channelChart'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Cafe24', 'Naver', 'Coupang'],
+            datasets: [{
+              data: [channelData.cafe24, channelData.naver, channelData.coupang],
+              backgroundColor: ['#3b82f6', '#22c55e', '#f97316'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#888', padding: 20 } }
+            }
           }
-        }
-      });
+        });
+      }
     }
 
     function renderInventory(inventory) {
@@ -641,7 +866,17 @@
     }
 
     // Init
-    loadData();
+    checkAuth();
+    const session = localStorage.getItem('tzb_session');
+    if (session === 'admin' || session === 'guest') {
+      if (session === 'guest') applyGuestRestrictions();
+      loadData();
+    }
+
+    // Enter key login
+    document.getElementById('loginPw').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
   </script>
 </body>
 </html>
